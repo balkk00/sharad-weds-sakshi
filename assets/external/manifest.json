@@ -1,0 +1,146 @@
+[
+  {
+    "file": "lottie/diya-flame.json",
+    "kind": "lottie",
+    "desc": "Golden diya (oil lamp) with animated flickering flame, gold #edb100 / #fde34b",
+    "source_url": "https://assets-v2.lottiefiles.com/a/7e0f806c-1166-11ee-a0ba-4f96bb556717/j8Hulj30WL.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/lightening-diya-oil-lamp-1O8T4JT4iy",
+    "bytes": 49325
+  },
+  {
+    "file": "lottie/fireworks-gold.json",
+    "kind": "lottie",
+    "desc": "Fireworks bursts in warm gold/orange (#fae24f, #ff7f2b), 720x1280 portrait, very lightweight",
+    "source_url": "https://assets-v2.lottiefiles.com/a/c5e67a64-1150-11ee-958b-972e50a39fec/BIJB3niD3S.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/fireworks-XgeVEEplQ1",
+    "bytes": 9299
+  },
+  {
+    "file": "lottie/mandala-gold.json",
+    "kind": "lottie",
+    "desc": "Breathing/pulsing ornate mandala in antique gold #b69753 with particles, 798x798 loop",
+    "source_url": "https://assets-v2.lottiefiles.com/a/76f8d43c-1179-11ee-ab90-b71574440b1b/ME2EkVakGT.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/breathing-mandala-5GaNcIJF8n",
+    "bytes": 155324
+  },
+  {
+    "file": "lottie/mandala-marigold-draw.json",
+    "kind": "lottie",
+    "desc": "Line mandala that draws itself (trim paths) in marigold orange #ff823f, 1700x1700",
+    "source_url": "https://assets-v2.lottiefiles.com/a/c158df4a-a408-11ef-873b-cfe52b668ea4/qg2IKpgunN.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/yoga-mandala-LOak5CxPvq",
+    "bytes": 17974
+  },
+  {
+    "file": "lottie/marigold-bloom.json",
+    "kind": "lottie",
+    "desc": "Marigold flowers blooming/falling (embedded marigold clipart rasters, self-contained), 500x800",
+    "source_url": "https://assets-v2.lottiefiles.com/a/7aef49b8-1183-11ee-a1ed-ffa9b609c23e/HQ0hPCShSC.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/flower-IsPEye3d2a",
+    "bytes": 36454
+  },
+  {
+    "file": "lottie/floating-hearts.json",
+    "kind": "lottie",
+    "desc": "Five gradient hearts floating upward, warm coral-to-deep-red palette (#fbac83-#c7012c)",
+    "source_url": "https://assets-v2.lottiefiles.com/a/f3a3ab8c-116b-11ee-85a2-f71f87293d77/n6iJCBtFXH.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/floating-hearts-028Jz6tJDh",
+    "bytes": 168983
+  },
+  {
+    "file": "lottie/hearts-simple.json",
+    "kind": "lottie",
+    "desc": "Minimal floating hearts loop, single pink #ff0070, tiny 7KB fallback",
+    "source_url": "https://assets-v2.lottiefiles.com/a/93d01cb4-1151-11ee-9f86-c3e4023ee40e/yoDsS5rNR2.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/love-floating-CInIHOxXPA",
+    "bytes": 7000
+  },
+  {
+    "file": "lottie/sparkles-gold.json",
+    "kind": "lottie",
+    "desc": "Gold star/sparkle burst, golds #f2b640 #f7db40 #f7e156, 300x300 loop",
+    "source_url": "https://assets-v2.lottiefiles.com/a/7f235a5a-1152-11ee-87e8-3b8da3eb160d/Q4TpGha0KW.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/gold-s0rIlsB844",
+    "bytes": 43872
+  },
+  {
+    "file": "lottie/wedding-couple.json",
+    "kind": "lottie",
+    "desc": "Bride & groom couple in love with flowers, warm gold/terracotta/maroon palette (#f9b869, #ad492d), 1080x1080",
+    "source_url": "https://assets-v2.lottiefiles.com/a/aef683b8-ce87-11ee-aea6-17952c983b3f/KCTQXBuev7.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/couple-in-love-Gc3oKlLoRe",
+    "bytes": 122066
+  },
+  {
+    "file": "lottie/gold-ornament-loader.json",
+    "kind": "lottie",
+    "desc": "Wedding ornament drawing itself in antique gold (#ad8138/#b7955b) trim-path loader, 700x700; note: 'v' key not in first 300 bytes (valid JSON, v=5.7.0)",
+    "source_url": "https://assets-v2.lottiefiles.com/a/70d10f29-23cc-4de4-a715-7eca5f4c0ccb/ajyKuVaVdq.json",
+    "license_note": "Lottie Simple License (free for personal & commercial use, no attribution required); page: https://lottiefiles.com/animations/wedding-loader-ajyKuVaVdq",
+    "bytes": 10389
+  },
+  {
+    "file": "img/marigold-flower.png",
+    "kind": "img",
+    "desc": "Real marigold (cempasuchil) flower photo cutout, transparent RGBA, 436x554, orange #d87818",
+    "source_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Cempas%C3%BAchil.png",
+    "license_note": "CC BY-SA 4.0, by GabCaRam (Wikimedia Commons) - attribution + share-alike required",
+    "bytes": 447993
+  },
+  {
+    "file": "img/toran-garland-flat.png",
+    "kind": "img",
+    "desc": "Toran (door hanging garland with marigolds & mango leaves) flat icon, transparent 512x512, golden-orange avg #eeb347",
+    "source_url": "https://cdn-icons-png.flaticon.com/512/8574/8574974.png",
+    "license_note": "Flaticon Free License (free with attribution to Flaticon/author); page: https://www.flaticon.com/free-icon/toran_8574974 (by Freepik)",
+    "bytes": 32693
+  },
+  {
+    "file": "img/toran-garland-flat2.png",
+    "kind": "img",
+    "desc": "Toran garland flat icon, outlined style, transparent 512x512",
+    "source_url": "https://cdn-icons-png.flaticon.com/512/5922/5922428.png",
+    "license_note": "Flaticon Free License (free with attribution to Flaticon/author); page: https://www.flaticon.com/free-icon/toran_5922428 (by graphikians)",
+    "bytes": 33227
+  },
+  {
+    "file": "img/marigold-icon.png",
+    "kind": "img",
+    "desc": "Marigold flower flat icon, warm orange w/ outline, transparent 512x512",
+    "source_url": "https://cdn-icons-png.flaticon.com/512/10905/10905422.png",
+    "license_note": "Flaticon Free License (free with attribution to Flaticon/author); page: https://www.flaticon.com/free-icon/marigold_10905422 (by Freepik)",
+    "bytes": 69532
+  },
+  {
+    "file": "img/gold-corner-up-left.png",
+    "kind": "img",
+    "desc": "Ornate antique gold corner flourish (up-left), 590x590; RGB on white background (no alpha - use blend mode or recolor)",
+    "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Corner_Ornament_Gold_Up_Left.png",
+    "license_note": "CC0 (Wikimedia Commons, antique ornament)",
+    "bytes": 15500
+  },
+  {
+    "file": "img/gold-corner-down-right.png",
+    "kind": "img",
+    "desc": "Ornate antique gold corner flourish (down-right), 590x590; RGB on white background (no alpha)",
+    "source_url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Corner_Ornament_Gold_Down_Right.png",
+    "license_note": "CC0 (Wikimedia Commons, antique ornament)",
+    "bytes": 15603
+  },
+  {
+    "file": "img/peacock-feather-flute.svg",
+    "kind": "img",
+    "desc": "Peacock feather with Krishna's flute, colored SVG vector (gold-brown/green/red)",
+    "source_url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Peacock_feather_with_flute.svg",
+    "license_note": "Public domain (Wikimedia Commons)",
+    "bytes": 37301
+  },
+  {
+    "file": "img/purna-kalash-motif.svg",
+    "kind": "img",
+    "desc": "Purna Kalash (auspicious pot) motif from Vishrambaug Wada door lintel, traditional Indian SVG; earthy brown fills, easy to recolor to gold",
+    "source_url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Purna_Kalash_motif_design_taken_from_the_door_lintel_of_Vishrambaug_Wada%2C_Pune.svg",
+    "license_note": "CC BY-SA 4.0, Art Projects MKCL KF (Wikimedia Commons) - attribution required",
+    "bytes": 14377
+  }
+]
