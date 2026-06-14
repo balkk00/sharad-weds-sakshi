@@ -121,69 +121,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // PROCEDURAL SVG — MARIGOLD GARLAND (hero top)
+    // PROCEDURAL SVG — ROYAL JEWELLED TORAN (hero top)
+    // A gold top rail with draped chains and hanging "latkan" pendants
+    // plus a central medallion. viewBox width tracks the screen width and
+    // CSS height is auto, so the ratio is fixed → it never stretches.
     // ============================================================
     function buildGarland(svg) {
         if (!svg) return [];
         const W = Math.max(window.innerWidth, 360);
-        const H = 150;
-        gsap.killTweensOf(svg.querySelectorAll('*'));
+        const H = 96;
+        gsap.killTweensOf(svg);
         svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
         svg.setAttribute('preserveAspectRatio', 'none');
         svg.innerHTML = '';
 
         const defs = el('defs', {}, svg);
-        const grad = el('radialGradient', { id: 'marigold' }, defs);
-        el('stop', { offset: '0%', 'stop-color': '#f6c453' }, grad);
-        el('stop', { offset: '60%', 'stop-color': '#e8962e' }, grad);
-        el('stop', { offset: '100%', 'stop-color': '#c46210' }, grad);
-        const grad2 = el('radialGradient', { id: 'marigold2' }, defs);
-        el('stop', { offset: '0%', 'stop-color': '#f3e6bd' }, grad2);
-        el('stop', { offset: '70%', 'stop-color': '#d4af37' }, grad2);
-        el('stop', { offset: '100%', 'stop-color': '#9a7416' }, grad2);
+        const g1 = el('linearGradient', { id: 'valGold', x1: '0', y1: '0', x2: '0', y2: '1' }, defs);
+        el('stop', { offset: '0%', 'stop-color': '#f7e7a8' }, g1);
+        el('stop', { offset: '45%', 'stop-color': '#d4af37' }, g1);
+        el('stop', { offset: '100%', 'stop-color': '#9a7416' }, g1);
+        const g2 = el('radialGradient', { id: 'valBead' }, defs);
+        el('stop', { offset: '0%', 'stop-color': '#fff3c4' }, g2);
+        el('stop', { offset: '55%', 'stop-color': '#e8cf7a' }, g2);
+        el('stop', { offset: '100%', 'stop-color': '#b8902c' }, g2);
 
-        const swags = Math.max(3, Math.round(W / 330));
-        const sw = W / swags;
-        const flowers = [];
+        // top rail (gold molding)
+        el('rect', { x: 0, y: 0, width: W, height: 7, fill: 'url(#valGold)' }, svg);
+        el('line', { x1: 0, y1: 7.5, x2: W, y2: 7.5, stroke: '#8a6a14', 'stroke-width': 1, opacity: .7 }, svg);
 
-        for (let s = 0; s < swags; s++) {
-            const x0 = s * sw, x1 = (s + 1) * sw;
-            const sag = 78 + (s % 2) * 12;
-            const gSwag = el('g', { class: 'garland-swag' }, svg);
-            const rope = el('path', {
-                d: `M ${x0} 8 Q ${(x0 + x1) / 2} ${sag * 2 - 8} ${x1} 8`,
-                fill: 'none', stroke: '#9a7416', 'stroke-width': 2, opacity: .8
-            }, gSwag);
+        const gap = 58;
+        const n = Math.max(6, Math.round(W / gap));
+        const step = W / n;
+        const railY = 7;
+        const danglers = [];
 
-            const len = rope.getTotalLength();
-            const nF = Math.round(len / 34);
-            for (let i = 0; i <= nF; i++) {
-                const p = rope.getPointAtLength(len * i / nF);
-                const big = i % 2 === 0;
-                const r = big ? 10 : 7;
-                const f = el('g', { transform: `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`, class: 'garland-flower' }, gSwag);
-                const petals = el('g', { fill: big ? 'url(#marigold)' : 'url(#marigold2)' }, f);
-                for (let k = 0; k < 8; k++) {
-                    const a = k * Math.PI / 4;
-                    el('circle', { cx: (r * .72 * Math.cos(a)).toFixed(1), cy: (r * .72 * Math.sin(a)).toFixed(1), r: r * .48 }, petals);
+        // draped chain swags + a tiny bead at each dip
+        let chain = `M 0 ${railY} `;
+        for (let i = 0; i < n; i++) chain += `Q ${((i + .5) * step).toFixed(1)} ${railY + 22} ${((i + 1) * step).toFixed(1)} ${railY} `;
+        el('path', { d: chain, fill: 'none', stroke: '#c9a227', 'stroke-width': 1.4, opacity: .85 }, svg);
+        for (let i = 0; i < n; i++) el('circle', { cx: ((i + .5) * step).toFixed(1), cy: railY + 22, r: 2.2, fill: 'url(#valBead)' }, svg);
+
+        // hanging latkan pendants at each node; a medallion at the centre
+        const mid = Math.round(n / 2);
+        for (let i = 0; i <= n; i++) {
+            const x = i * step;
+            const d = el('g', { transform: `translate(${x.toFixed(1)} ${railY})`, class: 'garland-dangler' }, svg);
+            if (i === mid) {
+                el('line', { x1: 0, y1: 0, x2: 0, y2: 16, stroke: '#9a7416', 'stroke-width': 1.5 }, d);
+                const m = el('g', { transform: 'translate(0 30)' }, d);
+                for (let k = 0; k < 12; k++) {
+                    const a = k * 30 * Math.PI / 180;
+                    el('line', { x1: (9 * Math.cos(a)).toFixed(1), y1: (9 * Math.sin(a)).toFixed(1), x2: (14.5 * Math.cos(a)).toFixed(1), y2: (14.5 * Math.sin(a)).toFixed(1), stroke: '#d4af37', 'stroke-width': 1.2 }, m);
                 }
-                el('circle', { cx: 0, cy: 0, r: r * .8, fill: big ? 'url(#marigold)' : 'url(#marigold2)' }, f);
-                el('circle', { cx: 0, cy: 0, r: r * .3, fill: '#8a4a10', opacity: .55 }, f);
-                flowers.push(f);
+                el('circle', { cx: 0, cy: 0, r: 9.5, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': 1 }, m);
+                el('circle', { cx: 0, cy: 0, r: 3.6, fill: '#6b1c34' }, m);
+                el('path', { d: 'M0 15 C5 19 5 27 0 30 C-5 27 -5 19 0 15 Z', fill: 'url(#valBead)' }, d);
+            } else {
+                const len = (i % 2 ? 17 : 25);
+                el('line', { x1: 0, y1: 0, x2: 0, y2: len, stroke: '#9a7416', 'stroke-width': 1.3 }, d);
+                el('circle', { cx: 0, cy: len, r: 2.7, fill: 'url(#valGold)' }, d);          // cap bead
+                el('path', { d: `M0 ${len + 2} C6 ${len + 7} 6 ${len + 17} 0 ${len + 19} C-6 ${len + 17} -6 ${len + 7} 0 ${len + 2} Z`, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': .7 }, d); // teardrop
+                el('circle', { cx: 0, cy: len + 10, r: 1.5, fill: '#6b1c34', opacity: .55 }, d);
             }
-            if (s < swags - 1) {
-                const tx = x1;
-                const tg = el('g', { class: 'garland-tassel' }, svg);
-                el('line', { x1: tx, y1: 8, x2: tx, y2: 40, stroke: '#9a7416', 'stroke-width': 1.6 }, tg);
-                el('circle', { cx: tx, cy: 46, r: 7, fill: 'url(#marigold)' }, tg);
-                el('circle', { cx: tx, cy: 56, r: 4.5, fill: 'url(#marigold2)' }, tg);
-            }
+            danglers.push(d);
         }
-        // gentle bob of the WHOLE svg — composited by the GPU; animating the
-        // swag groups individually re-rasterized the entire garland every frame
+
+        // gentle whole-svg bob — composited (no per-frame re-raster)
         gsap.killTweensOf(svg);
-        if (!RM) gsap.to(svg, { y: 5, rotation: .25, transformOrigin: '50% 0%', duration: 4.5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
-        return flowers;
+        if (!RM) gsap.to(svg, { y: 4, transformOrigin: '50% 0%', duration: 4.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        return danglers;
     }
 
     // ============================================================
@@ -851,9 +857,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: .55 });
 
         if (garlandFlowers.length && !RM) {
-            gsap.set('.garland-flower', { scale: 0, transformOrigin: 'center' });
-            heroTl.to('.garland-flower', { scale: 1, duration: .6, ease: 'back.out(2.2)', stagger: { each: .016, from: 'center' } }, 0);
-            heroTl.from('.garland-tassel', { opacity: 0, y: -18, duration: .7 }, .5);
+            const garlandSvg = document.getElementById('garland-svg');
+            heroTl.from(garlandSvg, { opacity: 0, duration: .8 }, 0);
+            gsap.set('.garland-dangler', { scaleY: 0, transformOrigin: '50% 0%' });
+            heroTl.to('.garland-dangler', { scaleY: 1, duration: .55, ease: 'back.out(2)', stagger: { each: .025, from: 'center' } }, .25);
         }
 
         heroTl.from('.ganesha-wrap', { opacity: 0, scale: .6, y: 20, duration: 1, ease: 'back.out(1.7)' }, .25)
@@ -895,7 +902,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- split-text titles (chars get their own gradient via CSS .char) ---
         gsap.utils.toArray('[data-split]').forEach(elm => {
             if (elm.closest('#hero')) return;
-            const split = new SplitText(elm, { type: 'chars', charsClass: 'char' });
+            // split into words AND chars so a word never breaks mid-line
+            // (e.g. "Groom" wrapping to "Groo" + "m" on narrow phones)
+            const split = new SplitText(elm, { type: 'words,chars', charsClass: 'char', wordsClass: 'split-word' });
             gsap.from(split.chars, {
                 opacity: 0, y: 34, rotateX: -55, transformOrigin: '50% 100%',
                 duration: .8, stagger: .025, ease: 'back.out(1.6)',
