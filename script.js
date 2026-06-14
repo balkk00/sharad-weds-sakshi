@@ -121,15 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // PROCEDURAL SVG — ROYAL JEWELLED TORAN (hero top)
-    // A gold top rail with draped chains and hanging "latkan" pendants
-    // plus a central medallion. viewBox width tracks the screen width and
-    // CSS height is auto, so the ratio is fixed → it never stretches.
+    // PROCEDURAL SVG — ROYAL FLOWER TORAN (hero top)
+    // A gold rail with a deep draped swag, long hanging side strands of
+    // strung rosettes + beads ending in tassels (a reversed-U / ∩ arch),
+    // and a central medallion. viewBox width tracks the screen and CSS
+    // height is auto, so the ratio is fixed → it never stretches.
     // ============================================================
     function buildGarland(svg) {
         if (!svg) return [];
         const W = Math.max(window.innerWidth, 360);
-        const H = 96;
+        const H = 212;
         gsap.killTweensOf(svg);
         svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
         svg.setAttribute('preserveAspectRatio', 'none');
@@ -144,51 +145,100 @@ document.addEventListener('DOMContentLoaded', () => {
         el('stop', { offset: '0%', 'stop-color': '#fff3c4' }, g2);
         el('stop', { offset: '55%', 'stop-color': '#e8cf7a' }, g2);
         el('stop', { offset: '100%', 'stop-color': '#b8902c' }, g2);
+        const g3 = el('radialGradient', { id: 'valRose' }, defs);
+        el('stop', { offset: '0%', 'stop-color': '#eaa0b3' }, g3);
+        el('stop', { offset: '100%', 'stop-color': '#b14a68' }, g3);
+
+        const railY = 6;
+
+        // --- small strung-element helpers ---
+        const rosette = (parent, x, y, r) => {
+            const f = el('g', { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)})` }, parent);
+            for (let k = 0; k < 6; k++) {
+                const a = k * 60 * Math.PI / 180;
+                el('circle', { cx: (r * Math.cos(a)).toFixed(1), cy: (r * Math.sin(a)).toFixed(1), r: (r * .6).toFixed(1), fill: 'url(#valBead)' }, f);
+            }
+            el('circle', { cx: 0, cy: 0, r: (r * .72).toFixed(1), fill: 'url(#valGold)' }, f);
+            el('circle', { cx: 0, cy: 0, r: (r * .28).toFixed(1), fill: '#6b1c34', opacity: .75 }, f);
+        };
+        const bead = (parent, x, y, r, rose) => el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r, fill: rose ? 'url(#valRose)' : 'url(#valBead)' }, parent);
+        const medallion = (parent) => {
+            el('line', { x1: 0, y1: 0, x2: 0, y2: 18, stroke: '#9a7416', 'stroke-width': 1.5 }, parent);
+            const m = el('g', { transform: 'translate(0 33)' }, parent);
+            for (let k = 0; k < 12; k++) {
+                const a = k * 30 * Math.PI / 180;
+                el('line', { x1: (10 * Math.cos(a)).toFixed(1), y1: (10 * Math.sin(a)).toFixed(1), x2: (16 * Math.cos(a)).toFixed(1), y2: (16 * Math.sin(a)).toFixed(1), stroke: '#d4af37', 'stroke-width': 1.2 }, m);
+            }
+            el('circle', { cx: 0, cy: 0, r: 10.5, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': 1 }, m);
+            el('circle', { cx: 0, cy: 0, r: 4, fill: '#6b1c34' }, m);
+            el('circle', { cx: 0, cy: 0, r: 1.6, fill: 'url(#valBead)' }, m);
+            el('path', { d: 'M0 16 C6 21 6 30 0 33 C-6 30 -6 21 0 16 Z', fill: 'url(#valBead)' }, parent);
+        };
 
         // top rail (gold molding)
-        el('rect', { x: 0, y: 0, width: W, height: 7, fill: 'url(#valGold)' }, svg);
-        el('line', { x1: 0, y1: 7.5, x2: W, y2: 7.5, stroke: '#8a6a14', 'stroke-width': 1, opacity: .7 }, svg);
+        el('rect', { x: 0, y: 0, width: W, height: 6, fill: 'url(#valGold)' }, svg);
+        el('line', { x1: 0, y1: 6.5, x2: W, y2: 6.5, stroke: '#8a6a14', 'stroke-width': 1, opacity: .7 }, svg);
 
-        const gap = 58;
-        const n = Math.max(6, Math.round(W / gap));
+        const gap = 84;
+        const n = Math.max(4, Math.round(W / gap));
         const step = W / n;
-        const railY = 7;
         const danglers = [];
 
-        // draped chain swags + a tiny bead at each dip
+        // deep draped swag chain across the top + strung beads/rosettes
         let chain = `M 0 ${railY} `;
-        for (let i = 0; i < n; i++) chain += `Q ${((i + .5) * step).toFixed(1)} ${railY + 22} ${((i + 1) * step).toFixed(1)} ${railY} `;
-        el('path', { d: chain, fill: 'none', stroke: '#c9a227', 'stroke-width': 1.4, opacity: .85 }, svg);
-        for (let i = 0; i < n; i++) el('circle', { cx: ((i + .5) * step).toFixed(1), cy: railY + 22, r: 2.2, fill: 'url(#valBead)' }, svg);
+        for (let i = 0; i < n; i++) chain += `Q ${((i + .5) * step).toFixed(1)} ${railY + 36} ${((i + 1) * step).toFixed(1)} ${railY} `;
+        const cp = el('path', { d: chain, fill: 'none', stroke: '#b8902c', 'stroke-width': 1.6, opacity: .85 }, svg);
+        const clen = cp.getTotalLength();
+        const cN = Math.max(1, Math.floor(clen / 26));
+        for (let i = 0; i <= cN; i++) {
+            const pt = cp.getPointAtLength(i * clen / cN);
+            if (i % 3 === 0) rosette(svg, pt.x, pt.y, 4.6);
+            else bead(svg, pt.x, pt.y, 2.6, i % 3 === 2);
+        }
 
-        // hanging latkan pendants at each node; a medallion at the centre
+        // medium latkan danglers from the interior nodes; medallion at centre
         const mid = Math.round(n / 2);
-        for (let i = 0; i <= n; i++) {
+        for (let i = 1; i < n; i++) {
             const x = i * step;
             const d = el('g', { transform: `translate(${x.toFixed(1)} ${railY})`, class: 'garland-dangler' }, svg);
             if (i === mid) {
-                el('line', { x1: 0, y1: 0, x2: 0, y2: 16, stroke: '#9a7416', 'stroke-width': 1.5 }, d);
-                const m = el('g', { transform: 'translate(0 30)' }, d);
-                for (let k = 0; k < 12; k++) {
-                    const a = k * 30 * Math.PI / 180;
-                    el('line', { x1: (9 * Math.cos(a)).toFixed(1), y1: (9 * Math.sin(a)).toFixed(1), x2: (14.5 * Math.cos(a)).toFixed(1), y2: (14.5 * Math.sin(a)).toFixed(1), stroke: '#d4af37', 'stroke-width': 1.2 }, m);
-                }
-                el('circle', { cx: 0, cy: 0, r: 9.5, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': 1 }, m);
-                el('circle', { cx: 0, cy: 0, r: 3.6, fill: '#6b1c34' }, m);
-                el('path', { d: 'M0 15 C5 19 5 27 0 30 C-5 27 -5 19 0 15 Z', fill: 'url(#valBead)' }, d);
+                medallion(d);
             } else {
-                const len = (i % 2 ? 17 : 25);
+                const len = (i % 2 ? 22 : 34);
                 el('line', { x1: 0, y1: 0, x2: 0, y2: len, stroke: '#9a7416', 'stroke-width': 1.3 }, d);
-                el('circle', { cx: 0, cy: len, r: 2.7, fill: 'url(#valGold)' }, d);          // cap bead
-                el('path', { d: `M0 ${len + 2} C6 ${len + 7} 6 ${len + 17} 0 ${len + 19} C-6 ${len + 17} -6 ${len + 7} 0 ${len + 2} Z`, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': .7 }, d); // teardrop
-                el('circle', { cx: 0, cy: len + 10, r: 1.5, fill: '#6b1c34', opacity: .55 }, d);
+                el('circle', { cx: 0, cy: len, r: 2.7, fill: 'url(#valGold)' }, d);
+                el('path', { d: `M0 ${len + 2} C6 ${len + 7} 6 ${len + 17} 0 ${len + 19} C-6 ${len + 17} -6 ${len + 7} 0 ${len + 2} Z`, fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': .7 }, d);
+                bead(d, 0, len + 9, 1.4, true);
             }
             danglers.push(d);
         }
 
-        // gentle whole-svg bob — composited (no per-frame re-raster)
+        // long hanging side strands — the legs of the reversed-U arch
+        const legLen = Math.min(184, H - 26);
+        const buildLeg = (xPos, dir) => {
+            const g = el('g', { transform: `translate(${xPos.toFixed(1)} ${railY})`, class: 'garland-dangler' }, svg);
+            const lp = el('path', { d: `M0 0 Q ${6 * dir} ${(legLen * .5).toFixed(1)} 0 ${legLen}`, fill: 'none', stroke: '#9a7416', 'stroke-width': 1.7, opacity: .85 }, g);
+            const ll = lp.getTotalLength();
+            const nE = Math.max(2, Math.floor(ll / 21));
+            for (let i = 1; i <= nE; i++) {
+                const pt = lp.getPointAtLength(i * ll / nE);
+                if (i % 2 === 0) rosette(g, pt.x, pt.y, 5.2);
+                else bead(g, pt.x, pt.y, 3, i % 4 === 3);
+            }
+            // tassel at the tip
+            const tip = lp.getPointAtLength(ll);
+            const t = el('g', { transform: `translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)})` }, g);
+            el('circle', { cx: 0, cy: 0, r: 5, fill: 'url(#valGold)' }, t);
+            el('path', { d: 'M0 4 C7 9 7 20 0 24 C-7 20 -7 9 0 4 Z', fill: 'url(#valBead)', stroke: '#9a7416', 'stroke-width': .8 }, t);
+            for (let k = -2; k <= 2; k++) el('line', { x1: k * 1.7, y1: 20, x2: k * 2.6, y2: 33, stroke: '#c9a227', 'stroke-width': 1 }, t);
+            return g;
+        };
+        danglers.push(buildLeg(13, 1));
+        danglers.push(buildLeg(W - 13, -1));
+
+        // gentle pendulum sway of the WHOLE svg — composited (no re-raster)
         gsap.killTweensOf(svg);
-        if (!RM) gsap.to(svg, { y: 4, transformOrigin: '50% 0%', duration: 4.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        if (!RM) gsap.fromTo(svg, { rotation: -0.55 }, { rotation: 0.55, transformOrigin: '50% 0%', duration: 5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
         return danglers;
     }
 
@@ -711,26 +761,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const weddingDate = new Date('2026-07-06T19:00:00+05:30');
     const cdEls = ['days', 'hours', 'minutes', 'seconds'].map(id => document.getElementById(id));
 
+    let cdRevealed = false, cdAnimating = false;
+    const pad2 = v => String(v).padStart(2, '0');
+    const liveCd = () => {
+        const diff = Math.max(0, weddingDate - new Date());
+        return {
+            d: Math.floor(diff / 864e5),
+            h: Math.floor(diff % 864e5 / 36e5),
+            m: Math.floor(diff % 36e5 / 6e4),
+            s: Math.floor(diff % 6e4 / 1e3)
+        };
+    };
+
     function rollTo(elm, val) {
-        const v = String(val).padStart(2, '0');
+        const v = pad2(val);
         if (elm.textContent === v) return;
-        if (RM || !invitationOpened) { elm.textContent = v; return; }
+        if (RM || !invitationOpened || !cdRevealed) { elm.textContent = v; return; }
         gsap.timeline()
-            .to(elm, { yPercent: -90, opacity: 0, duration: .22, ease: 'power2.in' })
+            .to(elm, { yPercent: -100, opacity: 0, duration: .2, ease: 'power2.in' })
             .add(() => { elm.textContent = v; })
-            .fromTo(elm, { yPercent: 90, opacity: 0 }, { yPercent: 0, opacity: 1, duration: .3, ease: 'power2.out' });
+            .fromTo(elm, { yPercent: 100, opacity: 0, scale: .8 }, { yPercent: 0, opacity: 1, scale: 1, duration: .36, ease: 'back.out(2.2)' });
     }
 
     function updateCountdown() {
-        const diff = Math.max(0, weddingDate - new Date());
-        const d = Math.floor(diff / 864e5);
-        const h = Math.floor(diff % 864e5 / 36e5);
-        const m = Math.floor(diff % 36e5 / 6e4);
-        const s = Math.floor(diff % 6e4 / 1e3);
-        [d, h, m, s].forEach((v, i) => rollTo(cdEls[i], v));
+        if (cdAnimating) return;        // don't fight the count-up reveal
+        const c = liveCd();
+        [c.d, c.h, c.m, c.s].forEach((v, i) => rollTo(cdEls[i], v));
     }
     updateCountdown();
     setInterval(updateCountdown, 1000);
+
+    // count-up reveal — played once when the countdown scrolls into view
+    function revealCountdown() {
+        if (RM) { cdRevealed = true; return; }
+        cdAnimating = true;
+        const tgt = liveCd();
+        const obj = { d: 0, h: 0, m: 0, s: 0 };
+        gsap.to(obj, {
+            d: tgt.d, h: tgt.h, m: tgt.m, s: tgt.s,
+            duration: 1.5, ease: 'power2.out', delay: .35,
+            onUpdate() {
+                cdEls[0].textContent = pad2(Math.round(obj.d));
+                cdEls[1].textContent = pad2(Math.round(obj.h));
+                cdEls[2].textContent = pad2(Math.round(obj.m));
+                cdEls[3].textContent = pad2(Math.round(obj.s));
+            },
+            onComplete() { cdAnimating = false; cdRevealed = true; }
+        });
+    }
 
     // ============================================================
     // STAR FIELD (countdown section)
@@ -858,9 +936,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (garlandFlowers.length && !RM) {
             const garlandSvg = document.getElementById('garland-svg');
-            heroTl.from(garlandSvg, { opacity: 0, duration: .8 }, 0);
+            gsap.set(garlandSvg, { opacity: 0 });
             gsap.set('.garland-dangler', { scaleY: 0, transformOrigin: '50% 0%' });
-            heroTl.to('.garland-dangler', { scaleY: 1, duration: .55, ease: 'back.out(2)', stagger: { each: .025, from: 'center' } }, .25);
+            heroTl.to(garlandSvg, { opacity: 1, duration: .8 }, 0);
+            heroTl.to('.garland-dangler', { scaleY: 1, duration: .7, ease: 'back.out(1.7)', stagger: { each: .04, from: 'edges' } }, .15);
         }
 
         heroTl.from('.ganesha-wrap', { opacity: 0, scale: .6, y: 20, duration: 1, ease: 'back.out(1.7)' }, .25)
@@ -961,11 +1040,32 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // --- countdown stars + diyas ---
-        ScrollTrigger.create({ trigger: '#countdown', start: 'top 80%', once: true, onEnter: initStars });
+        // --- countdown: stars, card pop, count-up reveal, diyas ---
+        ScrollTrigger.create({
+            trigger: '#countdown', start: 'top 78%', once: true,
+            onEnter: () => {
+                initStars();
+                gsap.from('.countdown-item', {
+                    y: 50, opacity: 0, scale: .8, duration: .7, ease: 'back.out(1.6)',
+                    stagger: .12, clearProps: 'transform'
+                });
+                gsap.from('.countdown-separator', { opacity: 0, scale: 0, duration: .5, stagger: .12, delay: .3, ease: 'back.out(2)' });
+                revealCountdown();
+            }
+        });
         gsap.from('.diya', {
             opacity: 0, y: 26, scale: .6, stagger: .18, duration: .8, ease: 'back.out(2)',
             scrollTrigger: { trigger: '.diya-row', start: 'top 88%' }
+        });
+
+        // --- couple cards: lotus emblems shimmer-pulse + names reveal ---
+        gsap.to('.card-emblem svg', { scale: 1.12, duration: 1.9, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        gsap.utils.toArray('.couple-name-card').forEach(card => {
+            const emblem = card.querySelector('.card-emblem');
+            gsap.from(emblem, {
+                scale: 0, rotation: -120, transformOrigin: 'center', duration: .9, ease: 'back.out(1.9)',
+                scrollTrigger: { trigger: card, start: 'top 84%' }
+            });
         });
 
         // --- couple heart: beat + one-time heart confetti burst ---
@@ -1073,7 +1173,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gateAmbient('#hero', () => [document.getElementById('garland-svg')]);
         gateAmbient('#couple', () => [
             document.getElementById('vine-svg'),
-            document.querySelector('#couple-heart svg')
+            document.querySelector('#couple-heart svg'),
+            ...document.querySelectorAll('.card-emblem svg')
         ]);
         gateAmbient('#countdown', () => [...document.querySelectorAll('#countdown .lights-svg .bulb')]);
         gateAmbient('#venue', () => [...document.querySelectorAll('#venue .lights-svg .bulb')]);
