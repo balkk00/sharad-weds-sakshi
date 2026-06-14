@@ -1631,6 +1631,54 @@ img { max-width: 100%; display: block; }
 }
 
 /* ============================================================
+   AMBIENT EXTRAS — peacock feathers, butterflies, rising diyas
+   ============================================================ */
+
+.amb { position: absolute; top: 0; pointer-events: none; will-change: transform, opacity; }
+
+/* peacock feather — drifts down, swaying */
+.feather { opacity: 0; animation: featherFall var(--dur, 16s) linear var(--delay, 0s) forwards; }
+@keyframes featherFall {
+    0%   { transform: translate3d(0, -64px, 0) rotate(var(--rot0, 0deg)); opacity: 0; }
+    8%   { opacity: var(--op, .8); }
+    90%  { opacity: var(--op, .8); }
+    100% { transform: translate3d(var(--drift, 40px), 106vh, 0) rotate(var(--rot1, 160deg)); opacity: 0; }
+}
+.feather-sway { display: block; transform-origin: 50% 0; animation: featherSway var(--sway, 4s) ease-in-out infinite alternate; }
+@keyframes featherSway { from { transform: rotate(-13deg); } to { transform: rotate(13deg); } }
+
+/* butterfly — crosses the screen, wings flapping */
+.butterfly { top: 0; animation: bflyCross var(--dur, 16s) linear forwards; }
+@keyframes bflyCross  { from { transform: translateX(-14vw); } to { transform: translateX(114vw); } }
+.butterfly.rtl { animation-name: bflyCrossR; }
+@keyframes bflyCrossR { from { transform: translateX(114vw); } to { transform: translateX(-14vw); } }
+.bfly-bob  { display: block; animation: bflyBob var(--bob, 2.2s) ease-in-out infinite alternate; }
+@keyframes bflyBob { from { transform: translateY(-16px); } to { transform: translateY(16px); } }
+.bfly-flap { display: block; transform-origin: 50% 50%; animation: bflyFlap var(--flap, .3s) ease-in-out infinite alternate; }
+@keyframes bflyFlap { from { transform: scaleX(1); } to { transform: scaleX(.5); } }
+
+/* rising diya — floats upward with a flicker */
+.rising-diya { top: auto; bottom: -44px; opacity: 0; animation: diyaRise var(--dur, 15s) linear var(--delay, 0s) forwards; }
+@keyframes diyaRise {
+    0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+    10%  { opacity: var(--op, .85); }
+    86%  { opacity: var(--op, .85); }
+    100% { transform: translate3d(var(--drift, 30px), calc(-100vh - 80px), 0); opacity: 0; }
+}
+.diya-sway { display: block; animation: diyaSwayK var(--sway, 4s) ease-in-out infinite alternate; }
+@keyframes diyaSwayK { from { transform: translateX(-9px); } to { transform: translateX(9px); } }
+.diya-glow {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 200, 120, .5), rgba(255, 150, 60, .12) 55%, transparent 72%);
+    animation: diyaFlick var(--flick, 1.4s) ease-in-out infinite;
+}
+@keyframes diyaFlick { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.12); opacity: 1; } }
+
+/* lite mode strips them too */
+.lite .feather, .lite .butterfly, .lite .rising-diya { display: none !important; }
+
+/* ============================================================
    VINE FRAME around the photo slideshow
    ============================================================ */
 

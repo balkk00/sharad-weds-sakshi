@@ -579,6 +579,106 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
+    // AMBIENT EXTRAS — peacock feathers, butterflies, rising diyas
+    // (chosen by the user; DOM sprites in the petal layer, capped + gated)
+    // ============================================================
+    const ambientTimers = [];
+
+    const FEATHER_SVG = `<svg viewBox="0 0 30 78" width="22" height="57" aria-hidden="true">
+        <ellipse cx="15" cy="32" rx="7.5" ry="27" fill="#2a9d8e" opacity="0.32"/>
+        <line x1="15" y1="4" x2="15" y2="58" stroke="#3c8f6e" stroke-width="1.2"/>
+        ${Array.from({ length: 9 }, (_, i) => { const y = 11 + i * 5; return `<line x1="15" y1="${y}" x2="${9 - (i % 2)}" y2="${y - 4}" stroke="#2a9d8e" stroke-width="0.7" opacity="0.55"/><line x1="15" y1="${y}" x2="${21 + (i % 2)}" y2="${y - 4}" stroke="#2a9d8e" stroke-width="0.7" opacity="0.55"/>`; }).join('')}
+        <ellipse cx="15" cy="62" rx="9" ry="12" fill="#caa14a"/>
+        <ellipse cx="15" cy="63" rx="6.4" ry="8.6" fill="#1f7a6e"/>
+        <ellipse cx="15" cy="64.5" rx="3.6" ry="5.4" fill="#173a8f"/>
+        <ellipse cx="13.8" cy="63" rx="1.3" ry="2.2" fill="#ffe9a8" opacity="0.9"/>
+    </svg>`;
+    const BFLY_SVG = (c1, c2) => `<svg viewBox="0 0 40 32" width="30" height="24" aria-hidden="true">
+        <path d="M20 12 C9 2 2 6 5 13 C2 17 8 19 20 16 Z" fill="${c1}"/>
+        <path d="M20 18 C10 26 4 24 7 19 C5 17 11 16 20 16 Z" fill="${c2}"/>
+        <path d="M20 12 C31 2 38 6 35 13 C38 17 32 19 20 16 Z" fill="${c1}"/>
+        <path d="M20 18 C30 26 36 24 33 19 C35 17 29 16 20 16 Z" fill="${c2}"/>
+        <ellipse cx="20" cy="16" rx="1.5" ry="7" fill="#4b1022"/>
+        <circle cx="11" cy="10" r="1.5" fill="#fff3c4" opacity=".85"/><circle cx="29" cy="10" r="1.5" fill="#fff3c4" opacity=".85"/>
+        <line x1="20" y1="10" x2="17" y2="3" stroke="#4b1022" stroke-width=".7"/><line x1="20" y1="10" x2="23" y2="3" stroke="#4b1022" stroke-width=".7"/>
+    </svg>`;
+    const DIYA_SVG = `<svg viewBox="0 0 26 34" width="20" height="26" aria-hidden="true">
+        <path d="M4 25 Q13 30 22 25 Q20 31 13 31 Q6 31 4 25 Z" fill="#caa14a"/>
+        <path d="M5 25 Q13 28 21 25" fill="none" stroke="#8a6a14" stroke-width=".6"/>
+        <path d="M13 7 C9.5 13 11 17 13 19.5 C15 17 16.5 13 13 7 Z" fill="#ffcf6b"/>
+        <path d="M13 11 C11.5 14 12 16.5 13 18.5 C14 16.5 14.5 14 13 11 Z" fill="#ff8a2b"/>
+    </svg>`;
+
+    function createFeather() {
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.feather').length >= (MOBILE ? 3 : 6)) return;
+        const o = document.createElement('div');
+        o.className = 'amb feather';
+        o.style.left = Math.random() * 100 + 'vw';
+        o.style.setProperty('--dur', (14 + Math.random() * 9) + 's');
+        o.style.setProperty('--delay', (Math.random() * 1.2) + 's');
+        o.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+        o.style.setProperty('--rot0', (Math.random() * 40 - 20) + 'deg');
+        o.style.setProperty('--rot1', (Math.random() * 220 - 110) + 'deg');
+        o.style.setProperty('--op', (0.5 + Math.random() * 0.35).toFixed(2));
+        const s = document.createElement('div');
+        s.className = 'feather-sway';
+        s.style.setProperty('--sway', (3 + Math.random() * 2.5) + 's');
+        s.innerHTML = FEATHER_SVG;
+        o.appendChild(s);
+        petalsContainer.appendChild(o);
+        setTimeout(() => o.remove(), 25000);
+    }
+    function createButterfly() {
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.butterfly').length >= (MOBILE ? 2 : 4)) return;
+        const o = document.createElement('div');
+        o.className = 'amb butterfly' + (Math.random() > .5 ? ' rtl' : '');
+        o.style.top = (8 + Math.random() * 62) + 'vh';
+        o.style.setProperty('--dur', (13 + Math.random() * 9) + 's');
+        const bob = document.createElement('div');
+        bob.className = 'bfly-bob';
+        bob.style.setProperty('--bob', (1.8 + Math.random() * 1.6) + 's');
+        const flap = document.createElement('div');
+        flap.className = 'bfly-flap';
+        flap.style.setProperty('--flap', (0.22 + Math.random() * 0.12) + 's');
+        const pal = [['#f0a93b', '#e0760f'], ['#e8cf7a', '#d4af37'], ['#e98aa0', '#c1466a']][(Math.random() * 3) | 0];
+        flap.innerHTML = BFLY_SVG(pal[0], pal[1]);
+        bob.appendChild(flap);
+        o.appendChild(bob);
+        petalsContainer.appendChild(o);
+        setTimeout(() => o.remove(), 24000);
+    }
+    function createDiya() {
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.rising-diya').length >= (MOBILE ? 3 : 6)) return;
+        const o = document.createElement('div');
+        o.className = 'amb rising-diya';
+        o.style.left = Math.random() * 100 + 'vw';
+        o.style.setProperty('--dur', (13 + Math.random() * 8) + 's');
+        o.style.setProperty('--delay', (Math.random() * 1.5) + 's');
+        o.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+        o.style.setProperty('--op', (0.6 + Math.random() * 0.35).toFixed(2));
+        const sway = document.createElement('div');
+        sway.className = 'diya-sway';
+        sway.style.setProperty('--sway', (3 + Math.random() * 2.5) + 's');
+        const glow = document.createElement('div');
+        glow.className = 'diya-glow';
+        glow.style.setProperty('--flick', (1.1 + Math.random() * 0.8) + 's');
+        glow.innerHTML = DIYA_SVG;
+        sway.appendChild(glow);
+        o.appendChild(sway);
+        petalsContainer.appendChild(o);
+        setTimeout(() => o.remove(), 24000);
+    }
+    function startAmbientExtras() {
+        if (RM || isLite() || ambientTimers.length) return;
+        for (let i = 0; i < (MOBILE ? 2 : 3); i++) setTimeout(createFeather, i * 900);
+        for (let i = 0; i < (MOBILE ? 2 : 3); i++) setTimeout(createDiya, 400 + i * 1100);
+        setTimeout(createButterfly, 700);
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createFeather(); }, MOBILE ? 5200 : 3400));
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createButterfly(); }, MOBILE ? 9000 : 6000));
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createDiya(); }, MOBILE ? 4600 : 3000));
+    }
+
+    // ============================================================
     // AMBIENT FIREFLIES (canvas, very subtle)
     // ============================================================
     const ambient = (() => {
@@ -652,6 +752,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('lite');
         clearInterval(petalTimer);
         petalTimer = -1; // blocks restarts
+        ambientTimers.forEach(clearInterval);
+        ambientTimers.length = 0;
         if (petalsContainer) petalsContainer.innerHTML = '';
         ambient.stop();
         lottieAnims.forEach(({ anim }) => { try { anim.pause(); } catch (e) {} });
@@ -729,6 +831,7 @@ document.addEventListener('DOMContentLoaded', () => {
               splashOverlay.style.display = 'none';
               ambient.start();
               startPetals();
+              startAmbientExtras();
               setTimeout(perfGuard, 1500); // measure once the entrance settles
           }, '-=.55');
     });
