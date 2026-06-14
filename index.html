@@ -225,11 +225,11 @@
                     <span class="hero-date-number">06</span>
                     <span class="hero-date-month">July 2026</span>
                 </div>
-            </div>
 
-            <div class="scroll-cue" data-animate aria-hidden="true">
-                <span class="scroll-cue-text">scroll</span>
-                <span class="scroll-cue-line"></span>
+                <div class="scroll-cue" data-animate aria-hidden="true">
+                    <span class="scroll-cue-text">scroll</span>
+                    <span class="scroll-cue-line"></span>
+                </div>
             </div>
         </section>
 
@@ -314,25 +314,18 @@
                 <h2 class="section-title light" data-split>Counting Down To</h2>
                 <p class="section-script light" data-animate>the most special day of our lives</p>
             </div>
-            <div class="countdown-timer" id="countdown-timer" data-animate>
-                <div class="countdown-item">
-                    <div class="digit-window"><span class="countdown-number" id="days">00</span></div>
-                    <span class="countdown-label">Days</span>
+            <div class="countdown-rings" id="countdown-rings" data-animate>
+                <div class="cd-ring" data-unit="days">
+                    <div class="cd-center"><span class="cd-num" id="days">00</span><span class="cd-label">Days</span></div>
                 </div>
-                <div class="countdown-separator" aria-hidden="true">✦</div>
-                <div class="countdown-item">
-                    <div class="digit-window"><span class="countdown-number" id="hours">00</span></div>
-                    <span class="countdown-label">Hours</span>
+                <div class="cd-ring" data-unit="hours">
+                    <div class="cd-center"><span class="cd-num" id="hours">00</span><span class="cd-label">Hours</span></div>
                 </div>
-                <div class="countdown-separator" aria-hidden="true">✦</div>
-                <div class="countdown-item">
-                    <div class="digit-window"><span class="countdown-number" id="minutes">00</span></div>
-                    <span class="countdown-label">Minutes</span>
+                <div class="cd-ring" data-unit="minutes">
+                    <div class="cd-center"><span class="cd-num" id="minutes">00</span><span class="cd-label">Minutes</span></div>
                 </div>
-                <div class="countdown-separator" aria-hidden="true">✦</div>
-                <div class="countdown-item">
-                    <div class="digit-window"><span class="countdown-number" id="seconds">00</span></div>
-                    <span class="countdown-label">Seconds</span>
+                <div class="cd-ring" data-unit="seconds">
+                    <div class="cd-center"><span class="cd-num" id="seconds">00</span><span class="cd-label">Seconds</span></div>
                 </div>
             </div>
         </section>
