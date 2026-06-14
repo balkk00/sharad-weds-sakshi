@@ -1046,8 +1046,54 @@ img { max-width: 100%; display: block; }
 .cal-perf::after { right: -16px; }
 
 .cal-body {
+    position: relative;
     text-align: center;
-    padding: 20px 22px 24px;
+    padding: 18px 22px 22px;
+    background:
+        radial-gradient(ellipse at 50% 42%, rgba(212, 175, 55, .10), transparent 62%),
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(154, 116, 22, .045) 27px 28px); /* faint ruled lines */
+}
+/* keep real content above the watermark + frame */
+.cal-body > *:not(.cal-mandala) { position: relative; z-index: 1; }
+/* inner gold filigree frame with notched corners */
+.cal-body::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(154, 116, 22, .3);
+    border-radius: 5px;
+    z-index: 0;
+    pointer-events: none;
+}
+.cal-body::after {
+    content: '';
+    position: absolute;
+    inset: 13px;
+    border: 1px solid rgba(154, 116, 22, .16);
+    border-radius: 3px;
+    z-index: 0;
+    pointer-events: none;
+}
+/* slowly rotating mandala watermark behind the number */
+.cal-mandala {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    width: 80%;
+    height: auto;
+    transform: translate(-50%, -50%);
+    color: var(--gold-dark);
+    opacity: .12;
+    z-index: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+.cal-flourish {
+    display: block;
+    width: 150px;
+    height: 26px;
+    margin: 4px auto 2px;
+    color: var(--gold-dark);
 }
 .cal-weekday {
     font-family: var(--font-upright);
@@ -1058,14 +1104,23 @@ img { max-width: 100%; display: block; }
     margin-bottom: 2px;
 }
 .cal-bignum {
+    position: relative;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: clamp(4.6rem, 17vw, 6.8rem);
     line-height: .95;
-    background: linear-gradient(160deg, #6b1c34, #9a4a22 45%, #b8860b);
+    background: linear-gradient(110deg, #6b1c34, #9a4a22 30%, #e2b53c 50%, #9a4a22 70%, #6b1c34);
+    background-size: 220% auto;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+.cal-bignum::before {
+    content: '';
+    position: absolute;
+    inset: -26% -24%;
+    background: radial-gradient(ellipse, rgba(212, 175, 55, .3), transparent 66%);
+    z-index: -1;
 }
 .cal-bignum span { display: inline-block; }
 .cal-bigword {

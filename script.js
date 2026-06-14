@@ -758,6 +758,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const weddingDate = new Date('2026-07-06T19:00:00+05:30');
     const cdEls = ['days', 'hours', 'minutes', 'seconds'].map(id => document.getElementById(id));
 
+    // faint gold mandala watermark behind the calendar number
+    (function decorateCalendar() {
+        const body = document.querySelector('#cal-front .cal-body');
+        if (!body) return;
+        const m = document.createElementNS(SVGNS, 'svg');
+        m.setAttribute('viewBox', '0 0 600 600');
+        m.setAttribute('class', 'cal-mandala');
+        m.setAttribute('aria-hidden', 'true');
+        body.insertBefore(m, body.firstChild);
+        buildMandala(m);
+    })();
+
     let cdRevealed = false, cdAnimating = false;
     const pad2 = v => String(v).padStart(2, '0');
     const liveCd = () => {
@@ -1054,6 +1066,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tear = document.querySelector('.cal-tear');
                 if (RM) { if (tear) tear.style.display = 'none'; revealCountdown(); return; }
 
+                // ambient life inside the page (gated to this section)
+                gsap.to('.cal-mandala', { rotation: 360, transformOrigin: '50% 50%', duration: 120, repeat: -1, ease: 'none' });
+                gsap.fromTo('.cal-bignum', { backgroundPosition: '180% center' }, { backgroundPosition: '-180% center', duration: 5.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
                 gsap.from('.cal', { y: -36, opacity: 0, duration: .7, ease: 'power3.out' });
                 // yesterday's page tears up and flutters away, revealing today's
                 gsap.timeline({ delay: .7 })
@@ -1183,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#couple-heart svg'),
             ...document.querySelectorAll('.card-emblem svg')
         ]);
-        gateAmbient('#countdown', () => [...document.querySelectorAll('#countdown .lights-svg .bulb'), document.querySelector('.cal-curl')]);
+        gateAmbient('#countdown', () => [...document.querySelectorAll('#countdown .lights-svg .bulb'), document.querySelector('.cal-curl'), document.querySelector('.cal-mandala'), document.querySelector('.cal-bignum')]);
         gateAmbient('#venue', () => [...document.querySelectorAll('#venue .lights-svg .bulb')]);
         gateAmbient('#footer', () => [
             footerMandala,
