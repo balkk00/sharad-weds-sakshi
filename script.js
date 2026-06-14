@@ -758,35 +758,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const weddingDate = new Date('2026-07-06T19:00:00+05:30');
     const cdEls = ['days', 'hours', 'minutes', 'seconds'].map(id => document.getElementById(id));
 
-    // build a hanging marigold for each unit — the number sits in its heart
-    (function buildMalaFlowers() {
-        document.querySelectorAll('#countdown-rings .cd-ring').forEach((ring, idx) => {
-            const svg = document.createElementNS(SVGNS, 'svg');
-            svg.setAttribute('viewBox', '0 0 120 120');
-            ring.insertBefore(svg, ring.firstChild);
-            const defs = el('defs', {}, svg);
-            const rg = (id, stops) => { const g = el('radialGradient', { id }, defs); stops.forEach(s => el('stop', { offset: s[0], 'stop-color': s[1] }, g)); };
-            rg(`cdo${idx}`, [['0%', '#ffce5e'], ['58%', '#f3941f'], ['100%', '#cf640b']]);
-            rg(`cdi${idx}`, [['0%', '#ffe79a'], ['100%', '#f4a51c']]);
-            const cg = el('radialGradient', { id: `cdc${idx}`, cx: '50%', cy: '38%' }, defs);
-            el('stop', { offset: '0%', 'stop-color': '#7a223c' }, cg);
-            el('stop', { offset: '100%', 'stop-color': '#3a0c18' }, cg);
-
-            // stem + bud + leaves (so it reads as hanging from the garland string)
-            el('line', { x1: 60, y1: 0, x2: 60, y2: 16, stroke: '#3c6f25', 'stroke-width': 2, opacity: .75 }, svg);
-            el('path', { d: 'M60 6 C67 3 72 7 69 13 C63 12 60 10 60 6 Z', fill: '#5e7c33' }, svg);
-            el('path', { d: 'M60 6 C53 3 48 7 51 13 C57 12 60 10 60 6 Z', fill: '#5e7c33' }, svg);
-
-            const o = el('g', { transform: 'translate(60 62)' }, svg);
-            const bloom = el('g', { class: 'cd-bloom' }, o);
-            for (let k = 0; k < 14; k++) el('ellipse', { cx: 0, cy: 0, rx: 13, ry: 6, transform: `rotate(${(k * 360 / 14).toFixed(1)}) translate(40 0)`, fill: `url(#cdo${idx})` }, bloom);
-            for (let k = 0; k < 12; k++) el('ellipse', { cx: 0, cy: 0, rx: 11, ry: 5.3, transform: `rotate(${(k * 360 / 12 + 13).toFixed(1)}) translate(31 0)`, fill: `url(#cdi${idx})` }, bloom);
-            for (let k = 0; k < 11; k++) el('ellipse', { cx: 0, cy: 0, rx: 8.5, ry: 4.6, transform: `rotate(${(k * 360 / 11 + 6).toFixed(1)}) translate(23 0)`, fill: `url(#cdo${idx})`, opacity: .92 }, bloom);
-            el('circle', { cx: 0, cy: 0, r: 30, fill: `url(#cdc${idx})`, stroke: '#e8cf7a', 'stroke-width': 1.5 }, bloom);
-            for (let k = 0; k < 18; k++) { const a = k * 20 * Math.PI / 180; el('circle', { cx: (26 * Math.cos(a)).toFixed(1), cy: (26 * Math.sin(a)).toFixed(1), r: 1, fill: 'rgba(232,207,122,.5)' }, bloom); }
-        });
-    })();
-
     let cdRevealed = false, cdAnimating = false;
     const pad2 = v => String(v).padStart(2, '0');
     const liveCd = () => {
@@ -1075,20 +1046,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // --- countdown: stars, marigolds bloom, count-up reveal, sway, diyas ---
+        // --- countdown: stars, the calendar drops in & a page tears off ---
         ScrollTrigger.create({
             trigger: '#countdown', start: 'top 78%', once: true,
             onEnter: () => {
                 initStars();
-                gsap.set('.cd-bloom', { scale: 0, transformOrigin: '50% 50%' });
-                gsap.to('.cd-bloom', { scale: 1, duration: .75, ease: 'back.out(1.7)', stagger: .13 });
-                gsap.from('.cd-center', { opacity: 0, duration: .5, delay: .35, stagger: .13 });
-                revealCountdown();
-                // the hung flowers sway out of sync, like a real garland
-                if (!RM) gsap.to('.cd-ring', {
-                    rotation: 3, transformOrigin: '50% 0%', duration: 3, yoyo: true, repeat: -1,
-                    ease: 'sine.inOut', delay: 1.1, stagger: { each: .5, from: 'edges' }
-                });
+                const tear = document.querySelector('.cal-tear');
+                if (RM) { if (tear) tear.style.display = 'none'; revealCountdown(); return; }
+
+                gsap.from('.cal', { y: -36, opacity: 0, duration: .7, ease: 'power3.out' });
+                // yesterday's page tears up and flutters away, revealing today's
+                gsap.timeline({ delay: .7 })
+                    .to(tear, { rotationX: -135, y: -10, duration: .75, ease: 'power2.in', transformOrigin: '50% 0%' })
+                    .to(tear, { y: 80, opacity: 0, rotationZ: 6, duration: .7, ease: 'power1.in' }, '-=.35')
+                    .add(() => { tear.style.display = 'none'; })
+                    .add(revealCountdown, '-=.2');
+
+                // the loose corner keeps curling gently, like paper in a breeze
+                gsap.to('.cal-curl', { scaleX: .6, scaleY: .6, duration: 2.4, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 2 });
             }
         });
         gsap.from('.diya', {
@@ -1208,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#couple-heart svg'),
             ...document.querySelectorAll('.card-emblem svg')
         ]);
-        gateAmbient('#countdown', () => [...document.querySelectorAll('#countdown .lights-svg .bulb'), ...document.querySelectorAll('.cd-ring')]);
+        gateAmbient('#countdown', () => [...document.querySelectorAll('#countdown .lights-svg .bulb'), document.querySelector('.cal-curl')]);
         gateAmbient('#venue', () => [...document.querySelectorAll('#venue .lights-svg .bulb')]);
         gateAmbient('#footer', () => [
             footerMandala,

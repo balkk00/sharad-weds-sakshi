@@ -314,18 +314,54 @@
                 <h2 class="section-title light" data-split>Counting Down To</h2>
                 <p class="section-script light" data-animate>the most special day of our lives</p>
             </div>
-            <div class="countdown-rings" id="countdown-rings" data-animate>
-                <div class="cd-ring" data-unit="days">
-                    <div class="cd-center"><span class="cd-num" id="days">00</span><span class="cd-label">Days</span></div>
-                </div>
-                <div class="cd-ring" data-unit="hours">
-                    <div class="cd-center"><span class="cd-num" id="hours">00</span><span class="cd-label">Hours</span></div>
-                </div>
-                <div class="cd-ring" data-unit="minutes">
-                    <div class="cd-center"><span class="cd-num" id="minutes">00</span><span class="cd-label">Minutes</span></div>
-                </div>
-                <div class="cd-ring" data-unit="seconds">
-                    <div class="cd-center"><span class="cd-num" id="seconds">00</span><span class="cd-label">Seconds</span></div>
+            <div class="cal-countdown" id="cal-countdown" data-animate>
+                <div class="cal">
+                    <div class="cal-rings" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+
+                    <!-- stacked pages for pad depth -->
+                    <div class="cal-back cal-back2" aria-hidden="true"></div>
+                    <div class="cal-back cal-back1" aria-hidden="true"></div>
+
+                    <!-- the live page -->
+                    <div class="cal-page" id="cal-front">
+                        <div class="cal-header"><span>July</span><span>2026</span></div>
+                        <div class="cal-perf" aria-hidden="true"></div>
+                        <div class="cal-body">
+                            <p class="cal-weekday">Monday</p>
+                            <p class="cal-bignum"><span id="days">00</span></p>
+                            <p class="cal-bigword">days to go</p>
+                            <div class="cal-time">
+                                <span class="cal-t"><b id="hours">00</b><i>hrs</i></span>
+                                <span class="cal-colon">:</span>
+                                <span class="cal-t"><b id="minutes">00</b><i>min</i></span>
+                                <span class="cal-colon">:</span>
+                                <span class="cal-t"><b id="seconds">00</b><i>sec</i></span>
+                            </div>
+                            <p class="cal-foot">till Sharad weds Sakshi</p>
+                        </div>
+                        <span class="cal-curl" aria-hidden="true"></span>
+                    </div>
+
+                    <!-- yesterday's page, tears away on reveal -->
+                    <div class="cal-page cal-tear" aria-hidden="true">
+                        <div class="cal-header"><span>July</span><span>2026</span></div>
+                        <div class="cal-perf"></div>
+                        <div class="cal-body">
+                            <p class="cal-weekday">Sunday</p>
+                            <p class="cal-bignum">23</p>
+                            <p class="cal-bigword">days to go</p>
+                            <div class="cal-time">
+                                <span class="cal-t"><b>23</b><i>hrs</i></span>
+                                <span class="cal-colon">:</span>
+                                <span class="cal-t"><b>59</b><i>min</i></span>
+                                <span class="cal-colon">:</span>
+                                <span class="cal-t"><b>59</b><i>sec</i></span>
+                            </div>
+                            <p class="cal-foot">till Sharad weds Sakshi</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
