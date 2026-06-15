@@ -625,44 +625,6 @@ img { max-width: 100%; display: block; }
     line-height: 1;
 }
 
-.scroll-cue {
-    margin-top: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    z-index: 2;
-}
-.scroll-cue-text {
-    font-family: var(--font-upright);
-    font-size: .78rem;
-    letter-spacing: .4em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-}
-.scroll-cue-line {
-    width: 1px;
-    height: 52px;
-    background: var(--gold-dark);
-    position: relative;
-    overflow: hidden;
-}
-.scroll-cue-line::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: var(--gold-bright);
-    animation: cueDrop 1.8s cubic-bezier(.65, 0, .35, 1) infinite;
-}
-@keyframes cueDrop {
-    0%   { top: -50%; }
-    100% { top: 110%; }
-}
-
 /* ============================================================
    COUPLE
    ============================================================ */
@@ -1638,6 +1600,20 @@ img { max-width: 100%; display: block; }
 
 .amb { position: absolute; top: 0; pointer-events: none; will-change: transform, opacity; }
 
+/* freeze decorative animations during active scrolling → smoother glide */
+.is-scrolling .petal,
+.is-scrolling .feather,
+.is-scrolling .butterfly,
+.is-scrolling .rising-diya,
+.is-scrolling .feather-sway,
+.is-scrolling .bfly-bob,
+.is-scrolling .bfly-flap,
+.is-scrolling .diya-sway,
+.is-scrolling .diya-glow,
+.is-scrolling .diya-flame,
+.is-scrolling .ganesha-halo,
+.is-scrolling .card-emblem svg { animation-play-state: paused !important; }
+
 /* peacock feather — drifts down, swaying */
 .feather { opacity: 0; animation: featherFall var(--dur, 16s) linear var(--delay, 0s) forwards; }
 @keyframes featherFall {
@@ -1836,6 +1812,10 @@ img { max-width: 100%; display: block; }
    ============================================================ */
 
 @media (max-width: 768px) {
+    /* these don't animate on mobile, so drop their persistent GPU layers —
+       too many will-change layers is itself a major mobile scroll-jank cause */
+    .garland-svg, .vine-svg, .hero-mandala, .footer-mandala, .splash-mandala,
+    .slideshow-container, .venue-card { will-change: auto !important; }
     .section { padding: 80px 18px; }
     .hero-section { padding-top: 120px; }
     .day-header { gap: 16px; }
@@ -1897,8 +1877,7 @@ img { max-width: 100%; display: block; }
 .lite .lottie-fireworks,
 .lite .lottie-bloom { display: none !important; }
 .lite .diya-flame,
-.lite .ganesha-halo,
-.lite .scroll-cue-line::after { animation: none !important; }
+.lite .ganesha-halo { animation: none !important; }
 
 /* ============================================================
    REDUCED MOTION

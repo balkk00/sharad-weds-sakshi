@@ -73,6 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
         else gsap.to(window, { scrollTo: target, duration: .8, ease: 'power2.out' });
     };
 
+    // While the finger is actively scrolling, pause decorative CSS animations
+    // so the compositor spends its frames gliding the page (big mobile win).
+    let _scrollIdle;
+    addEventListener('scroll', () => {
+        const b = document.body;
+        if (!b.classList.contains('is-scrolling')) b.classList.add('is-scrolling');
+        clearTimeout(_scrollIdle);
+        _scrollIdle = setTimeout(() => b.classList.remove('is-scrolling'), 170);
+    }, { passive: true });
+
     // ============================================================
     // SVG HELPERS
     // ============================================================
@@ -323,8 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // whole-frame breath instead of per-leaf tweens — per-leaf animation
         // forced a full re-raster of the vine svg every single frame
+        // (desktop only — a continuously-repainting SVG janks mobile scroll)
         gsap.killTweensOf(svg);
-        if (!RM) gsap.to(svg, { rotation: .6, transformOrigin: '50% 50%', duration: 3.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        if (!RM && !MOBILE) gsap.to(svg, { rotation: .6, transformOrigin: '50% 50%', duration: 3.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
 
         vineState = { path, len, leaves, buds };
         return vineState;
@@ -695,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     const ambient = (() => {
         const canvas = document.getElementById('ambient-canvas');
-        if (!canvas || RM || MOBILE) return { start() {} };   // skip entirely on phones
+        if (!canvas || RM || MOBILE) return { start() {}, stop() {} };   // skip entirely on phones
         const ctx = canvas.getContext('2d');
         let running = false, flies = [];
 
@@ -1080,8 +1091,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tagSplit = new SplitText('.hero-tagline', { type: 'words', wordsClass: 'word' });
         heroTl.from(tagSplit.words, { opacity: 0, y: 16, duration: .6, stagger: .12 }, '-=.35')
-              .from('.hero-date-badge', { opacity: 0, scale: .75, y: 20, duration: .8, ease: 'elastic.out(1, .6)' }, '-=.2')
-              .from('.scroll-cue', { opacity: 0, duration: .8 }, '-=.2');
+              .from('.hero-date-badge', { opacity: 0, scale: .75, y: 20, duration: .8, ease: 'elastic.out(1, .6)' }, '-=.2');
 
         // one-time golden shimmer sweeping across the names once they land
         heroTl.fromTo([...groomSplit.chars, ...brideSplit.chars],
@@ -1100,7 +1110,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             gsap.to(footerMandala, { rotation: 360, duration: 280, repeat: -1, ease: 'none' });
         }
-        gsap.to('.hero-content', {
+        // hero-content parallax (fades/lifts on scroll) — desktop only;
+        // animating opacity on this big subtree janks mobile scroll
+        if (!MOBILE) gsap.to('.hero-content', {
             yPercent: -12, opacity: .25, ease: 'none',
             scrollTrigger: { trigger: '.hero-section', start: '55% center', end: 'bottom top', scrub: true }
         });
@@ -1276,25 +1288,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         gsap.to('#footer-heart', { scale: 1.3, duration: .5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
 
-        // --- dot nav ---
+        // --- dot nav (desktop only; hidden + skipped on touch/mobile) ---
         const dotNav = document.getElementById('dot-nav');
-        dotNav.classList.add('active');
-        const navLinks = dotNav.querySelectorAll('a');
-        navLinks.forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                scrollToSection(a.getAttribute('href'));
+        if (!TOUCH) {
+            dotNav.classList.add('active');
+            const navLinks = dotNav.querySelectorAll('a');
+            navLinks.forEach(a => {
+                a.addEventListener('click', e => {
+                    e.preventDefault();
+                    scrollToSection(a.getAttribute('href'));
+                });
             });
-        });
-        gsap.utils.toArray('.section').forEach(sec => {
-            ScrollTrigger.create({
-                trigger: sec, start: 'top 50%', end: 'bottom 50%',
-                onToggle: self => {
-                    if (!self.isActive) return;
-                    navLinks.forEach(a => a.classList.toggle('current', a.dataset.section === sec.id));
-                }
+            gsap.utils.toArray('.section').forEach(sec => {
+                ScrollTrigger.create({
+                    trigger: sec, start: 'top 50%', end: 'bottom 50%',
+                    onToggle: self => {
+                        if (!self.isActive) return;
+                        navLinks.forEach(a => a.classList.toggle('current', a.dataset.section === sec.id));
+                    }
+                });
             });
-        });
+        } else {
+            dotNav.remove();
+        }
 
         // --- 3D tilt (desktop) ---
         if (!TOUCH && !RM) {
