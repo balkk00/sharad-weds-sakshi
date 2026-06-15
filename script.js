@@ -47,20 +47,30 @@ document.addEventListener('DOMContentLoaded', () => {
     let musicPlaying = false;
     let invitationOpened = false;
 
-    // ============================================================
-    // SMOOTH SCROLL (Lenis) — wired into GSAP's ticker
-    // ============================================================
-    const lenis = new Lenis({ duration: 1.0, smoothWheel: true });
-    lenis.on('scroll', ScrollTrigger.update);
-    const lenisTick = (t) => lenis.raf(t * 1000);
-    gsap.ticker.add(lenisTick);
-    gsap.ticker.lagSmoothing(0);
-    lenis.stop(); // page is locked behind the splash
-
     const isLite = () => document.body.classList.contains('lite');
+
+    // ============================================================
+    // SMOOTH SCROLL (Lenis) — DESKTOP ONLY.
+    // On touch devices Lenis fights native momentum scrolling (causing the
+    // abrupt stops / bounce), so we use native scrolling on mobile instead.
+    // ============================================================
+    let lenis = null, lenisTick = null;
+    if (!TOUCH && !RM) {
+        lenis = new Lenis({ duration: 1.0, smoothWheel: true, smoothTouch: false });
+        lenis.on('scroll', ScrollTrigger.update);
+        lenisTick = (t) => lenis.raf(t * 1000);
+        gsap.ticker.add(lenisTick);
+        gsap.ticker.lagSmoothing(0);
+        lenis.stop(); // page is locked behind the splash
+    }
+
+    // lock page scrolling until the invitation opens (works with or without Lenis)
+    const lockScroll = (on) => { document.documentElement.style.overflow = on ? 'hidden' : ''; };
+    lockScroll(true);
+
     const scrollToSection = (target) => {
-        if (isLite()) gsap.to(window, { scrollTo: target, duration: .8, ease: 'power2.out' });
-        else lenis.scrollTo(target, { duration: 1.6 });
+        if (lenis && !isLite()) lenis.scrollTo(target, { duration: 1.6 });
+        else gsap.to(window, { scrollTo: target, duration: .8, ease: 'power2.out' });
     };
 
     // ============================================================
@@ -198,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const railY = 6;
         el('rect', { x: 0, y: 0, width: W, height: 4, fill: 'url(#bellG)' }, svg);  // slim support rope
 
-        const gap = 116;
+        const gap = MOBILE ? 150 : 116;
         const n = Math.max(3, Math.round(W / gap));
         const step = W / n;
         const danglers = [];
@@ -206,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // deep flower swag across the top — the crown of the reversed-U
         let chain = `M 0 ${railY} `;
         for (let i = 0; i < n; i++) chain += `Q ${((i + .5) * step).toFixed(1)} ${railY + 44} ${((i + 1) * step).toFixed(1)} ${railY} `;
-        strew(svg, chain, 30, 1.0);
+        strew(svg, chain, MOBILE ? 46 : 30, MOBILE ? .92 : 1.0);
 
         // short hanging latkans between nodes; a fuller cluster + bell at centre
         const mid = Math.round(n / 2);
@@ -226,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const legLen = Math.min(200, H - 28);
         const buildLeg = (xPos, dir) => {
             const g = el('g', { transform: `translate(${xPos.toFixed(1)} ${railY})`, class: 'garland-dangler' }, svg);
-            strew(g, `M0 0 Q ${8 * dir} ${(legLen * .5).toFixed(1)} 0 ${legLen}`, 24, 1.04);
+            strew(g, `M0 0 Q ${8 * dir} ${(legLen * .5).toFixed(1)} 0 ${legLen}`, MOBILE ? 34 : 24, 1.04);
             bell(g, legLen + 14, 1.05);
             danglers.push(g);
         };
@@ -235,7 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // gentle pendulum sway of the WHOLE svg — composited (no re-raster)
         gsap.killTweensOf(svg);
-        if (!RM) gsap.fromTo(svg, { rotation: -0.5 }, { rotation: 0.5, transformOrigin: '50% 0%', duration: 5.5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+        // continuous sway only on desktop — on mobile a constantly-repainting
+        // full-width SVG layer is a real scroll-jank source
+        if (!RM && !MOBILE) gsap.fromTo(svg, { rotation: -0.5 }, { rotation: 0.5, transformOrigin: '50% 0%', duration: 5.5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
         return danglers;
     }
 
@@ -544,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { bg: 'radial-gradient(ellipse at 35% 25%, #ffd9a0, #e8962e 80%)', br: '12% 50% 46% 50%' }
     ];
 
-    const PETAL_CAP = MOBILE ? 12 : 18;
+    const PETAL_CAP = MOBILE ? 8 : 18;
     function createPetal() {
         if (!petalsContainer || petalsContainer.childElementCount > PETAL_CAP) return;
         const s = PETAL_STYLES[(Math.random() * PETAL_STYLES.length) | 0];
@@ -610,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </svg>`;
 
     function createFeather() {
-        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.feather').length >= (MOBILE ? 3 : 6)) return;
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.feather').length >= (MOBILE ? 2 : 6)) return;
         const o = document.createElement('div');
         o.className = 'amb feather';
         o.style.left = Math.random() * 100 + 'vw';
@@ -629,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => o.remove(), 25000);
     }
     function createButterfly() {
-        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.butterfly').length >= (MOBILE ? 2 : 4)) return;
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.butterfly').length >= (MOBILE ? 1 : 4)) return;
         const o = document.createElement('div');
         o.className = 'amb butterfly' + (Math.random() > .5 ? ' rtl' : '');
         o.style.top = (8 + Math.random() * 62) + 'vh';
@@ -648,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => o.remove(), 24000);
     }
     function createDiya() {
-        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.rising-diya').length >= (MOBILE ? 3 : 6)) return;
+        if (!petalsContainer || isLite() || petalsContainer.querySelectorAll('.rising-diya').length >= (MOBILE ? 2 : 6)) return;
         const o = document.createElement('div');
         o.className = 'amb rising-diya';
         o.style.left = Math.random() * 100 + 'vw';
@@ -670,12 +682,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function startAmbientExtras() {
         if (RM || isLite() || ambientTimers.length) return;
-        for (let i = 0; i < (MOBILE ? 2 : 3); i++) setTimeout(createFeather, i * 900);
-        for (let i = 0; i < (MOBILE ? 2 : 3); i++) setTimeout(createDiya, 400 + i * 1100);
+        for (let i = 0; i < (MOBILE ? 1 : 3); i++) setTimeout(createFeather, i * 900);
+        for (let i = 0; i < (MOBILE ? 1 : 3); i++) setTimeout(createDiya, 400 + i * 1100);
         setTimeout(createButterfly, 700);
-        ambientTimers.push(setInterval(() => { if (!document.hidden) createFeather(); }, MOBILE ? 5200 : 3400));
-        ambientTimers.push(setInterval(() => { if (!document.hidden) createButterfly(); }, MOBILE ? 9000 : 6000));
-        ambientTimers.push(setInterval(() => { if (!document.hidden) createDiya(); }, MOBILE ? 4600 : 3000));
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createFeather(); }, MOBILE ? 8000 : 3400));
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createButterfly(); }, MOBILE ? 13000 : 6000));
+        ambientTimers.push(setInterval(() => { if (!document.hidden) createDiya(); }, MOBILE ? 7000 : 3000));
     }
 
     // ============================================================
@@ -762,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (t.repeat && t.repeat() === -1) t.pause();
         });
         // native scrolling is snappier than scripted smoothing on weak machines
-        try { gsap.ticker.remove(lenisTick); lenis.destroy(); } catch (e) {}
+        if (lenis) { try { gsap.ticker.remove(lenisTick); lenis.destroy(); lenis = null; } catch (e) {} }
         ScrollTrigger.refresh();
     }
     window.__liteMode = enterLiteMode; // manual escape hatch
@@ -790,10 +802,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (invitationOpened) return;
         invitationOpened = true;
 
-        // music — start at 1:41 where the melody blooms
+        // music — start at 4:21 where the melody blooms
         bgMusic.volume = 0;
         bgMusic.play().then(() => {
-            bgMusic.currentTime = 101;
+            bgMusic.currentTime = 261;
             bgMusic.volume = .5;
             musicPlaying = true;
             musicToggle.classList.add('playing');
@@ -821,8 +833,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (container.closest('#splash-overlay')) anim.pause();
               });
               mainContent.classList.add('visible');
-              lenis.start();
-              lenis.scrollTo(0, { immediate: true });
+              lockScroll(false);
+              if (lenis) { lenis.start(); lenis.scrollTo(0, { immediate: true }); }
+              else window.scrollTo(0, 0);
               initMainAnimations();
           })
           .to(doorL, { xPercent: -102, duration: 1.15, ease: 'power3.inOut' }, '+=.35')
@@ -847,7 +860,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             bgMusic.volume = 0;
             bgMusic.play().then(() => {
-                if (bgMusic.currentTime < 101) bgMusic.currentTime = 101;
+                if (bgMusic.currentTime < 261) bgMusic.currentTime = 261;
                 bgMusic.volume = .5;
                 musicPlaying = true;
                 musicToggle.classList.add('playing');
@@ -1047,12 +1060,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: .55 });
 
         if (garlandFlowers.length && !RM) {
+            // ONE tween on the whole garland (composited) instead of staggering
+            // ~150 SVG nodes — the old per-flower bloom was the load-time jank.
             const garlandSvg = document.getElementById('garland-svg');
-            gsap.set(garlandSvg, { opacity: 0 });
-            gsap.set('.garland-bloom', { scale: 0, transformOrigin: '50% 50%' });
-            heroTl.to(garlandSvg, { opacity: 1, duration: .55 }, 0);
-            // marigolds bloom open one after another
-            heroTl.to('.garland-bloom', { scale: 1, duration: .5, ease: 'back.out(2.2)', stagger: { each: .01, from: 'random' } }, .1);
+            heroTl.fromTo(garlandSvg,
+                { opacity: 0, y: -26 },
+                { opacity: 1, y: 0, duration: .9, ease: 'power3.out' }, 0);
         }
 
         heroTl.from('.ganesha-wrap', { opacity: 0, scale: .6, y: 20, duration: 1, ease: 'back.out(1.7)' }, .25)
@@ -1078,16 +1091,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ganesha breathes/floats gently (gated to the hero below)
         if (!RM) gsap.to('.ganesha-icon', { y: -7, duration: 2.8, yoyo: true, repeat: -1, ease: 'sine.inOut' });
 
-        // hero parallax + mandala spin
-        gsap.to(heroMandala, {
-            rotation: 50, ease: 'none',
-            scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: .8 }
-        });
+        // hero parallax + mandala spin — the mandala spins repaint a big SVG,
+        // so keep those desktop-only; the content parallax is composited (fine)
+        if (!MOBILE) {
+            gsap.to(heroMandala, {
+                rotation: 50, ease: 'none',
+                scrollTrigger: { trigger: '.hero-section', start: 'top top', end: 'bottom top', scrub: .8 }
+            });
+            gsap.to(footerMandala, { rotation: 360, duration: 280, repeat: -1, ease: 'none' });
+        }
         gsap.to('.hero-content', {
             yPercent: -12, opacity: .25, ease: 'none',
             scrollTrigger: { trigger: '.hero-section', start: '55% center', end: 'bottom top', scrub: true }
         });
-        gsap.to(footerMandala, { rotation: 360, duration: 280, repeat: -1, ease: 'none' });
 
         // --- generic reveals ---
         gsap.utils.toArray('[data-animate]').forEach(elm => {

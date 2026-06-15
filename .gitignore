@@ -46,3 +46,6 @@ zoom.cjs
 CLAUDE.md
 assets/external/dl.sh
 *.log
+
+# local range-capable dev server
+serve.py
