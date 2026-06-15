@@ -8,9 +8,13 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, SplitText);
+    // don't let ScrollTrigger refresh when the mobile URL bar shows/hides
+    // (that height-only "resize" is what made the scroll jolt/shake at the end)
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
     const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const TOUCH = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    const TOUCH = window.matchMedia('(hover: none), (pointer: coarse)').matches
+        || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const MOBILE = window.matchMedia('(max-width: 768px)').matches;
 
     // --- perf: pause infinite tweens & lottie players while their
@@ -962,7 +966,10 @@ document.addEventListener('DOMContentLoaded', () => {
             onToggle: s => { inView = s.isActive; }
         });
 
+        let starW = -1;
         function fit() {
+            if (canvas.width === section.offsetWidth && starW === section.offsetWidth) return; // ignore height-only (URL bar)
+            starW = section.offsetWidth;
             canvas.width = section.offsetWidth;
             canvas.height = section.offsetHeight;
             stars = Array.from({ length: Math.round(canvas.width / (MOBILE ? 16 : 11)) }, () => ({
@@ -1056,8 +1063,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-lights]').forEach(buildStringLights);
         document.querySelectorAll('[data-corner]').forEach(buildCornerOrnament);
 
-        let resizeT;
+        // Rebuild procedural art only on real WIDTH changes. On mobile the URL
+        // bar showing/hiding fires resize with a height-only change mid-scroll;
+        // rebuilding + ScrollTrigger.refresh there is exactly what jolted/shook
+        // the page as the scroll settled — so ignore height-only resizes.
+        let resizeT, lastW = window.innerWidth;
         addEventListener('resize', () => {
+            if (window.innerWidth === lastW) return;   // URL-bar height change → ignore
+            lastW = window.innerWidth;
             clearTimeout(resizeT);
             resizeT = setTimeout(() => {
                 buildGarland(document.getElementById('garland-svg'));
