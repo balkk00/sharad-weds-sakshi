@@ -151,43 +151,35 @@
     <!-- falling flower petals (DOM layer) -->
     <div id="petals-container" class="petals-container" aria-hidden="true"></div>
 
-    <!-- ============ SPLASH OVERLAY ============ -->
-    <div id="splash-overlay" class="splash-overlay">
+    <!-- ============ SPLASH OVERLAY (self-drawing rangoli) ============ -->
+    <div id="splash-overlay" class="splash-overlay splash-rangoli">
         <div class="splash-texture" aria-hidden="true"></div>
-        <svg id="splash-mandala" class="splash-mandala" viewBox="0 0 600 600" aria-hidden="true"></svg>
         <div id="sparkle-particles" class="sparkle-canvas" aria-hidden="true"></div>
 
         <div class="splash-content">
-            <div class="splash-arch-frame">
-                <div class="splash-arch-inner">
-                    <img src="assets/backgrounds/couple-art.png" alt="Sharad and Sakshi illustration" class="splash-couple-art">
+            <div class="rangoli-stage" id="rangoli-stage">
+                <svg id="rangoli" class="rangoli-svg" viewBox="0 0 600 600" aria-hidden="true"></svg>
+                <div class="rangoli-diyas" id="rangoli-diyas" aria-hidden="true"></div>
+                <div class="rangoli-glow" aria-hidden="true"></div>
+                <div class="rangoli-center">
+                    <p class="splash-subtitle">You are cordially invited to the wedding of</p>
+                    <h1 class="splash-names">
+                        <span class="splash-name-word">Sharad</span>
+                        <span class="splash-amp">&amp;</span>
+                        <span class="splash-name-word">Sakshi</span>
+                    </h1>
+                    <svg class="splash-divider" aria-hidden="true"><use href="#sym-divider"/></svg>
+                    <p class="splash-date">6<sup>th</sup> July 2026 &nbsp;·&nbsp; Jaipur</p>
                 </div>
-                <svg class="arch-trim" viewBox="0 0 200 260" preserveAspectRatio="none" aria-hidden="true">
-                    <path d="M6 254 V100 C6 38 48 6 100 6 C152 6 194 38 194 100 V254"
-                          fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
-                </svg>
             </div>
 
-            <p class="splash-subtitle splash-stagger">You are cordially invited to the wedding of</p>
-            <h1 class="splash-names splash-stagger">
-                <span class="splash-name-word">Sharad</span>
-                <span class="splash-amp">&amp;</span>
-                <span class="splash-name-word">Sakshi</span>
-            </h1>
-            <svg class="splash-divider splash-stagger" aria-hidden="true"><use href="#sym-divider"/></svg>
-            <p class="splash-date splash-stagger">6<sup>th</sup> July 2026 &nbsp;·&nbsp; Jaipur</p>
-
-            <button id="open-invite-btn" class="open-invite-btn splash-stagger">
+            <button id="open-invite-btn" class="open-invite-btn">
                 <span class="btn-shine" aria-hidden="true"></span>
+                <svg class="btn-flower" aria-hidden="true"></svg>
                 <span class="btn-text">Open Invitation</span>
+                <svg class="btn-flower" aria-hidden="true"></svg>
             </button>
-
-            <div id="lottie-couple-anim" class="lottie-couple-anim" aria-hidden="true"></div>
         </div>
-
-        <!-- royal doors used for the opening transition -->
-        <div class="door door-left" aria-hidden="true"><span class="door-edge"></span></div>
-        <div class="door door-right" aria-hidden="true"><span class="door-edge"></span></div>
     </div>
 
     <!-- ============ MAIN CONTENT ============ -->

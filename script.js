@@ -440,35 +440,79 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // SPLASH — mandala draw-on + tsParticles gold dust + entrance
     // ============================================================
-    const splashMandala = document.getElementById('splash-mandala');
-    buildMandala(splashMandala);
+    // ---- self-drawing rangoli (mandala) ----
+    const rangoli = document.getElementById('rangoli');
+    buildMandala(rangoli);
+    const rangoliStrokes = rangoli ? rangoli.querySelectorAll('[pathLength]') : [];
+    const rangoliFills = rangoli ? rangoli.querySelectorAll('circle:not([pathLength])') : [];
+    gsap.set(rangoliStrokes, { strokeDasharray: 100, strokeDashoffset: 100 });
+    gsap.set(rangoliFills, { opacity: 0 });
 
-    const splashPaths = splashMandala ? splashMandala.querySelectorAll('[pathLength]') : [];
-    gsap.set(splashPaths, { strokeDasharray: 100, strokeDashoffset: 100 });
-    gsap.to(splashPaths, {
-        strokeDashoffset: 0,
-        duration: RM ? .01 : 2.6,
-        ease: 'power2.inOut',
-        stagger: { each: .012, from: 'random' }
+    // ---- diyas around the rim ----
+    const diyaWrap = document.getElementById('rangoli-diyas');
+    const diyaEls = [];
+    if (diyaWrap) {
+        const N = 8;
+        for (let i = 0; i < N; i++) {
+            const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+            const d = document.createElement('div');
+            d.className = 'rangoli-diya';
+            d.style.left = (50 + 47 * Math.cos(a)).toFixed(1) + '%';
+            d.style.top = (50 + 47 * Math.sin(a)).toFixed(1) + '%';
+            d.innerHTML = '<span class="flame"></span><span class="cup"></span>';
+            diyaWrap.appendChild(d);
+            diyaEls.push(d);
+        }
+    }
+    gsap.set(diyaEls, { opacity: 0, scale: 0, transformOrigin: '50% 100%' });
+
+    // ---- ornate floral sprigs flanking the Open Invitation button ----
+    const btnFlower = (parent, cx, cy, R) => {
+        for (let k = 0; k < 10; k++) { const g = el('g', { transform: `rotate(${k * 36} ${cx} ${cy})` }, parent); el('ellipse', { cx: cx + R * .62, cy, rx: R * .5, ry: R * .24, fill: '#e8a02e' }, g); }
+        for (let k = 0; k < 8; k++) { const g = el('g', { transform: `rotate(${k * 45 + 18} ${cx} ${cy})` }, parent); el('ellipse', { cx: cx + R * .36, cy, rx: R * .34, ry: R * .18, fill: '#f6c64e' }, g); }
+        el('circle', { cx, cy, r: R * .28, fill: '#8a4a08' }, parent);
+    };
+    const btnLeaf = (parent, x, y, ang, len) => {
+        const g = el('g', { transform: `translate(${x} ${y}) rotate(${ang})` }, parent);
+        el('path', { d: `M0 0 Q ${len * .42} ${-len * .3} ${len} 0 Q ${len * .42} ${len * .3} 0 0 Z`, fill: '#b08f38' }, g);
+        el('path', { d: `M1 0 L ${len * .8} 0`, stroke: 'rgba(255,245,210,.35)', 'stroke-width': .5, fill: 'none' }, g);
+    };
+    document.querySelectorAll('.btn-flower').forEach(svg => {
+        svg.setAttribute('viewBox', '0 0 46 32');
+        el('path', { d: 'M34 16 Q 20 7 7 11', fill: 'none', stroke: '#c9a14a', 'stroke-width': 1.2, 'stroke-linecap': 'round' }, svg);
+        el('path', { d: 'M34 17 Q 23 25 12 25', fill: 'none', stroke: '#c9a14a', 'stroke-width': 1.1, 'stroke-linecap': 'round' }, svg);
+        el('path', { d: 'M7 11 q -4 -1 -3 -4 q 1 -2.5 3.4 -1.2', fill: 'none', stroke: '#c9a14a', 'stroke-width': 1, 'stroke-linecap': 'round' }, svg);   // curl
+        btnLeaf(svg, 19, 9, -22, 8.5);
+        btnLeaf(svg, 14, 24, 28, 7.5);
+        btnFlower(svg, 11.5, 24.5, 3);       // small bud
+        btnFlower(svg, 34, 15.5, 6.6);       // main marigold
     });
-    gsap.to(splashMandala, { rotation: 360, duration: 240, repeat: -1, ease: 'none' });
-
-    const splashIntro = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    splashIntro
-        .from('.splash-arch-frame', { opacity: 0, y: 40, scale: .88, duration: 1.2 }, .25)
-        .from('.splash-subtitle', { opacity: 0, y: 24, duration: .9 }, '-=.6');
 
     const splashNamesSplit = new SplitText('.splash-names', { type: 'chars', charsClass: 'char' });
-    splashIntro
-        .from(splashNamesSplit.chars, {
-            opacity: 0, y: 44, rotateX: -70, transformOrigin: '50% 100%',
-            duration: 1, stagger: .045, ease: 'back.out(1.6)'
-        }, '-=.45')
-        .from('.splash-divider', { opacity: 0, scaleX: 0, duration: .8 }, '-=.4')
-        .from('.splash-date', { opacity: 0, y: 18, duration: .8 }, '-=.5')
-        .from('.open-invite-btn', { opacity: 0, y: 24, scale: .9, duration: .9, ease: 'back.out(1.8)' }, '-=.4');
 
-    gsap.to('.splash-couple-art', { scale: 1.02, duration: 7, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    // ---- intro: rangoli draws itself, diyas light, names form in the centre ----
+    // Reveal the splash content now — in the SAME synchronous tick the .from()
+    // tweens below set their hidden start-states — so the very first paint after
+    // the script is the intro's starting frame (no flash of static HTML names).
+    gsap.set('.splash-rangoli .splash-content', { visibility: 'visible' });
+    const splashIntro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    splashIntro
+        .from('.rangoli-stage', { scale: .9, opacity: 0, duration: .8, ease: 'power2.out' }, 0)
+        .to(rangoliStrokes, { strokeDashoffset: 0, duration: RM ? .01 : 2.3, ease: 'power1.inOut', stagger: { each: .012, from: 'center' } }, .2)
+        .to(rangoliFills, { opacity: 1, duration: .5, stagger: .012 }, '-=1.0')
+        .to(diyaEls, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)', stagger: .06 }, '-=.9')
+        .from('.rangoli-glow', { opacity: 0, scale: .6, duration: .7 }, '-=1.1')
+        .from('.splash-subtitle', { opacity: 0, y: 14, duration: .7 }, '-=.7')
+        .from(splashNamesSplit.chars, { opacity: 0, y: 28, scale: .85, duration: .7, stagger: .045, ease: 'back.out(1.6)' }, '-=.45')
+        .from('.splash-divider', { opacity: 0, scaleX: 0, duration: .6 }, '-=.3')
+        .from('.splash-date', { opacity: 0, y: 12, duration: .6 }, '-=.4')
+        .from('.open-invite-btn', { opacity: 0, y: 20, scale: .92, duration: .8, ease: 'back.out(1.7)' }, '-=.3');
+
+    // gentle perpetual life: slow rangoli spin + name shimmer (splash only)
+    if (!RM) {
+        gsap.to(rangoli, { rotation: 360, transformOrigin: '50% 50%', duration: 220, repeat: -1, ease: 'none' });
+        gsap.to(splashNamesSplit.chars, { backgroundPosition: '-180% center', duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    }
 
     // gold dust field (tsParticles — twinkling, cursor-reactive)
     let splashParticles = null;
@@ -808,14 +852,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // OPEN INVITATION — confetti burst + royal doors transition
+    // OPEN INVITATION — the rangoli blooms outward & dissolves to reveal
     // ============================================================
-    gsap.set(doorL, { xPercent: -102 });
-    gsap.set(doorR, { xPercent: 102 });
-
     openInviteBtn.addEventListener('click', () => {
         if (invitationOpened) return;
         invitationOpened = true;
+        gsap.killTweensOf([rangoli, ...splashNamesSplit.chars]);   // stop spin/shimmer
 
         // music — start at 4:21 where the melody blooms
         bgMusic.volume = 0;
@@ -826,24 +868,19 @@ document.addEventListener('DOMContentLoaded', () => {
             musicToggle.classList.add('playing');
         }).catch(() => { musicPlaying = false; });
 
+        // gold burst from the centre of the rangoli
         if (typeof confetti === 'function' && !RM) {
-            const r = openInviteBtn.getBoundingClientRect();
-            const origin = { x: (r.left + r.width / 2) / innerWidth, y: (r.top + r.height / 2) / innerHeight };
-            confetti({ particleCount: 90, spread: 75, startVelocity: 38, origin, colors: ['#d4af37', '#e8cf7a', '#f3e6bd', '#b14a68'], zIndex: 2000, disableForReducedMotion: true });
-            confetti({ particleCount: 40, spread: 360, startVelocity: 18, decay: .92, scalar: .8, shapes: ['star'], origin, colors: ['#e8cf7a', '#d4af37'], zIndex: 2000, disableForReducedMotion: true });
+            confetti({ particleCount: 80, spread: 360, startVelocity: 26, decay: .9, scalar: .95, origin: { x: .5, y: .5 }, colors: ['#d4af37', '#e8cf7a', '#f3e6bd', '#b14a68'], zIndex: 2000, disableForReducedMotion: true });
         }
 
         const tl = gsap.timeline({ defaults: { ease: 'power3.inOut' } });
-        tl.to('.splash-content', { opacity: 0, y: -36, scale: .96, duration: .55, ease: 'power2.in' }, .12)
-          .to(['.splash-mandala', '.sparkle-canvas', '.splash-texture'], { opacity: 0, duration: .5 }, '<')
-          .to([doorL, doorR], { xPercent: 0, duration: .7 }, '-=.25')
+        tl.to('#rangoli', { scale: 1.45, rotation: 30, opacity: 0, transformOrigin: '50% 50%', duration: 1.0, ease: 'power2.in' }, 0)
+          .to('.rangoli-diyas', { opacity: 0, scale: 1.3, transformOrigin: '50% 50%', duration: .6 }, 0)
+          .to('.rangoli-glow', { opacity: 0, duration: .5 }, 0)
+          .to('.rangoli-center', { opacity: 0, scale: 1.12, duration: .6 }, 0)
+          .to('.open-invite-btn', { opacity: 0, y: 12, duration: .4 }, 0)
           .add(() => {
-              splashOverlay.classList.add('doors-only');
-              splashOverlay.style.pointerEvents = 'none';
-              gsap.set('.splash-content', { display: 'none' });
               if (splashParticles) { try { splashParticles.destroy(); } catch (e) {} }
-              // stop every splash-only animation for good
-              gsap.killTweensOf([splashMandala, '.splash-couple-art', ...splashNamesSplit.chars]);
               lottieAnims.forEach(({ anim, container }) => {
                   if (container.closest('#splash-overlay')) anim.pause();
               });
@@ -852,16 +889,15 @@ document.addEventListener('DOMContentLoaded', () => {
               if (lenis) { lenis.start(); lenis.scrollTo(0, { immediate: true }); }
               else window.scrollTo(0, 0);
               initMainAnimations();
-          })
-          .to(doorL, { xPercent: -102, duration: 1.15, ease: 'power3.inOut' }, '+=.35')
-          .to(doorR, { xPercent: 102, duration: 1.15, ease: 'power3.inOut' }, '<')
+          }, .5)
+          .to('#splash-overlay', { opacity: 0, duration: .8, ease: 'power2.inOut' }, .6)
           .add(() => {
               splashOverlay.style.display = 'none';
               ambient.start();
               startPetals();
               startAmbientExtras();
-              setTimeout(perfGuard, 1500); // measure once the entrance settles
-          }, '-=.55');
+              setTimeout(perfGuard, 1500);
+          });
     });
 
     // ============================================================
